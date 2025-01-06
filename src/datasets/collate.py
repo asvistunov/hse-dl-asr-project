@@ -1,71 +1,45 @@
 import torch
-from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional as F
+from typing import List, Dict
 
-
-def collate_fn(dataset_items: list[dict]):
+def collate_fn(dataset_items: List[Dict], padding_values: Dict[str, int] = None):
     """
-    Collate and pad fields in the dataset items.
-    Converts individual items into a batch.
+    Collates and pads fields from a list of dataset items into a batch suitable for model input.
+
+    This function handles both tensor-based fields (e.g., 'audio', 'spectrogram', 'text_encoded') 
+    and non-tensor fields (e.g., 'text', 'audio_path'). Tensor fields are padded to the length 
+    of the longest item in the batch, while non-tensor fields are collected as lists.
 
     Args:
-        dataset_items (list[dict]): list of objects from
-            dataset.__getitem__.
+        dataset_items (List[Dict]): A list of dataset items, where each item is a dictionary 
+            containing fields to be collated.
+        padding_values (Dict[str, int], optional): A dictionary specifying padding values 
+            for specific fields. If a field is not specified, it defaults to padding with 0.
+
     Returns:
-        result_batch (dict[Tensor]): dict, containing batch-version
-            of the tensors.
+        Dict[str, torch.Tensor or List]: A dictionary containing collated and padded fields.
     """
 
-    audios = [item["audio"] for item in dataset_items]
-    audio_paths = [item["audio_path"] for item in dataset_items]
-    texts = [item["text"] for item in dataset_items]
+    if padding_values is None:
+        padding_values = {}
 
-    spectrograms = [item["spectrogram"] for item in dataset_items]
-    spectrogram_lengths = [spec.shape[-1] for spec in spectrograms]
+    batch = {}
 
-    text_encoded_list = [item["text_encoded"] for item in dataset_items]
-    text_encoded_lengths = [enc.shape[-1] for enc in text_encoded_list]
+    for key in ('audio', 'spectrogram', 'text_encoded', 'text', 'audio_path'):
 
-    max_time = max(spec.shape[-1] for spec in spectrograms)
+        if key in ('text', 'audio_path'):
+            batch[key] = [el[key] for el in dataset_items]
+            continue
 
-    # Сформируем список падженых спектрограмм
-    padded_spectrograms = []
-    for spec in spectrograms:
-        # spec имеет форму (1, n_mels, time)
-        # Нужно допадить по последней оси (time) до max_time
-        current_time = spec.shape[-1]
-        pad_size = max_time - current_time
-        if pad_size > 0:
-            # pad принимает аргументы в порядке (left, right, top, bottom, ...)
-            # здесь паддим только по последней размерности (time)
-            spec_padded = F.pad(spec, (0, pad_size), mode="constant", value=0.0)
-        else:
-            spec_padded = spec
+        tensors = [el[key] for el in dataset_items]
+        lengths = [tensor.shape[-1] for tensor in tensors]
 
-        padded_spectrograms.append(spec_padded)
+        batch[key + '_length'] = torch.tensor(lengths)
 
-    spectrograms_batched = torch.stack(padded_spectrograms, dim=0)
+        fill_with = padding_values.get(key, 0)
 
-    text_encoded_padded = pad_sequence(
-        [enc.squeeze(0) for enc in text_encoded_list],
-        batch_first=True,
-        padding_value=0
-    )
-
-    spectrogram_lengths = torch.tensor(spectrogram_lengths, dtype=torch.long)
-    text_encoded_lengths = torch.tensor(text_encoded_lengths, dtype=torch.long)
-
-
-    batch = {
-        "audio": audios,  # список необработанных аудио (можете здесь тоже паддить, если нужно)
-        "audio_path": audio_paths,
-        "text": texts,   # список истинных строк
-        # Спектрограммы + длины
-        "spectrogram": spectrograms_batched.squeeze(1),                # (B, 1, n_mels, max_time)
-        "spectrogram_length": spectrogram_lengths,          # (B,)
-        # Тексты в виде индексных последовательностей + длины
-        "text_encoded": text_encoded_padded,                # (B, max_text_len)
-        "text_encoded_length": text_encoded_lengths         # (B,)
-    }
-
+        max_length = max(lengths)
+        padded_tensors = [F.pad(tensor, (0, max_length - tensor.shape[-1]), value=fill_with) for tensor in tensors]
+        batch[key] = torch.cat(padded_tensors)
+    
     return batch

@@ -77,3 +77,6 @@ This repository is based on a [PyTorch Project Template](https://github.com/Blin
 ## License
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+
+
+[Ссылка на WB отчет](https://wandb.ai/coolduck-hse/pytorch_template_asr_example/reports/-DeepSpeech---VmlldzoxMDgzMzgwNA?accessToken=93eeonqqtp9r1jk8jw7lwwbh9t60miebfwllyv6nufl30czayvl549mow5c8urue)

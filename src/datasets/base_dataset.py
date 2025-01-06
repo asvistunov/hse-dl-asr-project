@@ -94,10 +94,10 @@ class BaseDataset(Dataset):
             "audio_path": audio_path,
         }
 
-        # TODO think of how to apply wave augs before calculating spectrogram
-        # Note: you may want to preserve both audio in time domain and
-        # in time-frequency domain for logging
         instance_data = self.preprocess_data(instance_data)
+        
+        instance_data['spectrogram_original'] = instance_data['spectrogram']
+        spectrogram = self.get_spectrogram(instance_data['audio'])
 
         return instance_data
 

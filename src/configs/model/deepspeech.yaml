@@ -1,0 +1,4 @@
+_target_: src.model.DeepSpeech
+hidden_size: 1024
+hidden_layers: 5
+lookahead_context: 20

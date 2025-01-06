@@ -1,0 +1,17 @@
+train:
+  get_spectrogram: # special key for getting spectrogram
+    _target_: torchaudio.transforms.MelSpectrogram
+    sample_rate: 16000
+  audio: # name of the tensor on which we apply transform
+    _target_: torchvision.transforms.v2.Compose
+    transforms:
+      - _target_: src.transforms.wav_augs.Gain
+      # - _target_: src.transforms.wav_augs.HighPassFilter
+      # - _target_: src.transforms.wav_augs.PitchShift
+      # - _target_: src.transforms.wav_augs.PolarityInversion
+      # - _target_: src.transforms.wav_augs.TimeInversion
+
+inference:
+  get_spectrogram:
+    _target_: torchaudio.transforms.MelSpectrogram
+    sample_rate: 16000

@@ -1,17 +1,17 @@
 defaults:
-  - model: deepspeech2
-  - writer: cometml
+  - model: deepspeech
+  - writer: wandb
   - metrics: example
-  - datasets: example
+  - datasets: deepspeech2
   - dataloader: example
-  - transforms: example_only_instance
+  - transforms: deepspeech2
   - _self_
 optimizer:
   _target_: torch.optim.AdamW
   lr: 3e-4
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.OneCycleLR
-  max_lr: 1e-2
+  max_lr: 3e-4
   pct_start: 0.1
   steps_per_epoch: ${trainer.epoch_len}
   epochs: ${trainer.n_epochs}
