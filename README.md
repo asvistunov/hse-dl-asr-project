@@ -1,82 +1,69 @@
-# Automatic Speech Recognition (ASR) with PyTorch
+## Описание репозитория
 
-<p align="center">
-  <a href="#about">About</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#license">License</a>
-</p>
+Репозиторий [hse-dl-asr-project](https://github.com/asvistunov/hse-dl-asr-project) представляет собой проект по задаче автоматического распознавания речи (ASR) в рамках курса «Глубокое обучение в аудио» (Deep Learning in Audio, DLA) в НИУ ВШЭ.
 
-## About
+Данный репозиторий содержит готовое решение с обученной моделью, которое можно использовать для инференса и дальнейшего анализа. В проекте реализованы все необходимые компоненты, включая скрипты для обучения и инференса, конфигурационные файлы и базовую структуру проекта.
 
-This repository contains a template for solving ASR task with PyTorch. This template branch is a part of the [HSE DLA course](https://github.com/markovka17/dla) ASR homework. Some parts of the code are missing (or do not follow the most optimal design choices...) and students are required to fill these parts themselves (as well as writing their own models, etc.).
+### Отчет о выполнении
 
-See the task assignment [here](https://github.com/markovka17/dla/tree/2024/hw1_asr).
+Для подробного отчета о ходе выполнения проекта можно ознакомиться с отчетом на Weights & Biases:  
+[Ссылка на WB отчет](https://wandb.ai/coolduck-hse/pytorch_template_asr_example/reports/-DeepSpeech---VmlldzoxMDgzMzgwNA?accessToken=93eeonqqtp9r1jk8jw7lwwbh9t60miebfwllyv6nufl30czayvl549mow5c8urue)
 
-## Installation
+### Установка проекта
 
-Follow these steps to install the project:
-
-0. (Optional) Create and activate new environment using [`conda`](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html) or `venv` ([`+pyenv`](https://github.com/pyenv/pyenv)).
-
-   a. `conda` version:
+1. **Клонируйте репозиторий**:
 
    ```bash
-   # create env
-   conda create -n project_env python=PYTHON_VERSION
-
-   # activate env
-   conda activate project_env
+   git clone https://github.com/asvistunov/hse-dl-asr-project.git
+   cd hse-dl-asr-project
    ```
 
-   b. `venv` (`+pyenv`) version:
+2. **Создайте и активируйте виртуальное окружение** (рекомендуется):
 
-   ```bash
-   # create env
-   ~/.pyenv/versions/PYTHON_VERSION/bin/python3 -m venv project_env
+   - С использованием `venv`:
 
-   # alternatively, using default python version
-   python3 -m venv project_env
+     ```bash
+     python3 -m venv project_env
+     source project_env/bin/activate
+     ```
 
-   # activate env
-   source project_env
-   ```
+   - С использованием `conda`:
 
-1. Install all required packages
+     ```bash
+     conda create -n project_env python=3.10
+     conda activate project_env
+     ```
+
+3. **Установите необходимые зависимости**:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-2. Install `pre-commit`:
-   ```bash
-   pre-commit install
-   ```
+---
 
-## How To Use
+### Запуск инференса
 
-To train a model, run the following command:
+Для запуска инференса с обученной моделью выполните:
 
 ```bash
-python3 train.py -cn=CONFIG_NAME HYDRA_CONFIG_ARGUMENTS
+gdown 1Cu3ke8Zfc6_oQXzw-fPP2fW1ZJVc0boP -O saved.zip
+unzip saved.zip -d .
+python3 inference.py
 ```
 
-Where `CONFIG_NAME` is a config from `src/configs` and `HYDRA_CONFIG_ARGUMENTS` are optional arguments.
+Скрипт автоматически загрузит обученную модель и выполнит распознавание речи на тестовых данных.
 
-To run inference (evaluate the model or save predictions):
+---
+
+### Запуск обучения.
+
+Если требуется обучение модели с нуля, выполните следующую команду:
 
 ```bash
-python3 inference.py HYDRA_CONFIG_ARGUMENTS
+python3 train.py
 ```
 
-## Credits
+---
 
-This repository is based on a [PyTorch Project Template](https://github.com/Blinorot/pytorch_project_template).
-
-## License
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
-
-
-[Ссылка на WB отчет](https://wandb.ai/coolduck-hse/pytorch_template_asr_example/reports/-DeepSpeech---VmlldzoxMDgzMzgwNA?accessToken=93eeonqqtp9r1jk8jw7lwwbh9t60miebfwllyv6nufl30czayvl549mow5c8urue)
+*Примечание: данный проект распространяется под лицензией MIT.*
