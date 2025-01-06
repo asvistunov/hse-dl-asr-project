@@ -1,8 +1,8 @@
 defaults:
-  - model: baseline
-  - writer: wandb
+  - model: deepspeech2
+  - writer: cometml
   - metrics: example
-  - datasets: onebatchtest
+  - datasets: example
   - dataloader: example
   - transforms: example_only_instance
   - _self_
